@@ -1,3 +1,13 @@
-"scripts": {
-  "start": "node server.js"
+{
+  "name": "proxy-backend",
+  "version": "1.0.0",
+  "description": "Proxy search backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "node-fetch": "^2.7.0"
+  }
 }
