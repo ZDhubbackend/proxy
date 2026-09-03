@@ -2,39 +2,327 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Zyte Powered Search</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZYTE_NET // UNBLOCKED</title>
     <style>
-        body { font-family: sans-serif; background: #121212; color: white; padding: 20px; }
-        .search-box { display: flex; max-width: 600px; margin: 0 auto; }
-        input { flex-grow: 1; padding: 10px; font-size: 16px; }
-        button { padding: 10px 20px; background: #3a7bd5; color: white; border: none; cursor: pointer;}
-        #results { margin-top: 20px; background: white; color: black; padding: 20px; border-radius: 5px; min-height: 200px; }
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ea;
+            --dark-bg: #050508;
+            --grid-color: rgba(0, 243, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background-color: var(--dark-bg);
+            color: var(--neon-blue);
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+            background-image: linear-gradient(var(--grid-color) 1px, transparent 1px),
+                              linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        /* CRT Scanline Effect */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 2;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 3;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3em;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+            animation: glitch 3s infinite;
+        }
+
+        /* Unblocked Games Quick Links */
+        .quick-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .quick-links span {
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        .quick-links span:hover {
+            background: var(--neon-blue);
+            color: var(--dark-bg);
+            box-shadow: 0 0 15px var(--neon-blue);
+            transform: translateY(-2px);
+        }
+
+        .search-box {
+            display: flex;
+            background: rgba(0,0,0,0.6);
+            border: 2px solid var(--neon-pink);
+            box-shadow: 0 0 15px rgba(255, 0, 234, 0.4);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+        }
+
+        .search-box:focus-within {
+            box-shadow: 0 0 25px var(--neon-pink);
+        }
+
+        input {
+            flex-grow: 1;
+            padding: 15px 20px;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 18px;
+            font-family: inherit;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        button {
+            padding: 0 30px;
+            background: var(--neon-pink);
+            color: white;
+            font-family: inherit;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #ff4df0;
+        }
+
+        /* Hacker Loader */
+        #loader {
+            display: none;
+            text-align: center;
+            margin-top: 40px;
+            font-size: 1.5em;
+            color: var(--neon-pink);
+        }
+
+        .spinner {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Iframe container */
+        .iframe-container {
+            margin-top: 30px;
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+            border-radius: 8px;
+            padding: 5px;
+            background: #fff;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s, transform 0.5s;
+            display: none;
+        }
+
+        .iframe-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+
+        iframe {
+            width: 100%;
+            height: 75vh;
+            border: none;
+            background: white;
+            border-radius: 4px;
+        }
+
+        /* Animations */
+        @keyframes glitch {
+            0% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue); }
+            14% { text-shadow: 0.05em 0 0 var(--neon-pink), -0.05em -0.025em 0 var(--neon-blue); }
+            15% { text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue); }
+            49% { text-shadow: -0.05em -0.025em 0 var(--neon-pink), 0.025em 0.025em 0 var(--neon-blue); }
+            50% { text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue); }
+            99% { text-shadow: 0.025em 0.05em 0 var(--neon-pink), 0.05em 0 0 var(--neon-blue); }
+            100% { text-shadow: -0.025em 0 0 var(--neon-pink), -0.025em -0.05em 0 var(--neon-blue); }
+        }
+
+        @keyframes spin { 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search via Proxy...">
-        <button onclick="performSearch()">Search</button>
+    <div class="container">
+        <h1>Zyte_Net // Proxy</h1>
+        
+        <div class="quick-links">
+            <span onclick="setSearch('https://now.gg')">🎮 Cloud Gaming</span>
+            <span onclick="setSearch('https://poki.com')">👾 Poki Games</span>
+            <span onclick="setSearch('https://discord.com/app')">💬 Discord Web</span>
+            <span onclick="setSearch('https://reddit.com')">🌐 Reddit</span>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Enter target URL (e.g., https://example.com)" autocomplete="off">
+            <button onclick="performSearch()">Bypass</button>
+        </div>
+
+        <div id="loader">
+            <span class="spinner">👾</span> INITIATING ZYTE TUNNEL...
+        </div>
+
+        <div class="iframe-container" id="iframeWrapper">
+            <iframe id="results"></iframe>
+        </div>
     </div>
 
-    <!-- The scraped HTML from Zyte will load in this frame -->
-    <iframe id="results" style="width:100%; height:80vh; border:none; margin-top: 20px; background: white;"></iframe>
-
     <script>
+        // --- WEB AUDIO API: SYNTH SOUND EFFECTS ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            if (type === 'type') {
+                // Short retro blip for typing
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(600 + Math.random() * 400, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.05);
+            } else if (type === 'search') {
+                // Swoosh up for initiating search
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.4);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.4);
+            } else if (type === 'success') {
+                // Power-up ding for successful load
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.6);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.6);
+            }
+        }
+
+        // Attach typing sound
+        document.getElementById('searchInput').addEventListener('input', () => playSound('type'));
+        
+        // Enter key to search
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        // Quick Links helper
+        function setSearch(url) {
+            playSound('type');
+            document.getElementById('searchInput').value = url;
+            performSearch();
+        }
+
         async function performSearch() {
-            const query = document.getElementById('searchInput').value;
+            let query = document.getElementById('searchInput').value.trim();
+            if (!query) return;
+
+            // Ensure URL has protocol for the base tag fix
+            if (!query.startsWith('http')) {
+                query = 'https://' + query;
+                document.getElementById('searchInput').value = query;
+            }
+
+            playSound('search');
+            
+            const loader = document.getElementById('loader');
+            const wrapper = document.getElementById('iframeWrapper');
             const iframe = document.getElementById('results');
             
-            // Show loading state
-            iframe.srcdoc = "<h3>Loading proxy results through Zyte...</h3>";
+            // Reset UI
+            wrapper.classList.remove('visible');
+            iframe.srcdoc = "";
+            loader.style.display = 'block';
 
-            // Call YOUR server, which safely calls Zyte
-            const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-            const htmlString = await response.text();
+            try {
+                // Fetch from your backend (which uses Zyte)
+                const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                
+                if (!response.ok) throw new Error("Proxy fetch failed");
+                let htmlString = await response.text();
 
-            // Inject the proxy-fetched HTML into the iframe
-            iframe.srcdoc = htmlString;
+                // BUG FIX: Inject a <base> tag into the HTML so CSS, Images, and JS load relative to the target site, not your local server.
+                try {
+                    const targetUrlObj = new URL(query);
+                    const baseTag = `<base href="${targetUrlObj.origin}">`;
+                    // Insert base tag right after <head>, or at the top if no head exists
+                    if (htmlString.includes('<head>')) {
+                        htmlString = htmlString.replace('<head>', `<head>${baseTag}`);
+                    } else {
+                        htmlString = baseTag + htmlString;
+                    }
+                } catch (e) {
+                    console.warn("Could not parse URL for base tag injection.");
+                }
+
+                // Inject modified HTML
+                iframe.srcdoc = htmlString;
+                
+                // Animate in
+                loader.style.display = 'none';
+                wrapper.classList.add('visible');
+                playSound('success');
+
+            } catch (error) {
+                loader.style.display = 'none';
+                wrapper.classList.add('visible');
+                iframe.srcdoc = `<body style="background:#050508; color:#ff00ea; font-family:monospace; text-align:center; padding-top:50px;">
+                    <h2>ERROR: TUNNEL BREACHED</h2>
+                    <p>${error.message}</p>
+                    <p>Make sure your /api/search backend route is running and configured with your Zyte API key.</p>
+                </body>`;
+            }
         }
     </script>
 </body>
