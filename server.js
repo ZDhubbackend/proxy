@@ -1,20 +1,27 @@
 const express = require('express');
 const fetch = require('node-fetch');
+const path = require('path');
 const app = express();
 
-// Serve your HTML file
-app.use(express.static('public'));
+// Serve static files from the 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
 
-// The endpoint your HTML will call
 app.get('/api/search', async (req, res) => {
     const searchQuery = req.query.q;
     
-    // Zyte API endpoint and your private key
+    // Get the API key from Render's environment variables
+    const apiKey = process.env.ZYTE_API_KEY;
+
+    if (!apiKey) {
+        console.error("DEBUG: ZYTE_API_KEY is missing from environment variables!");
+        return res.status(500).send('Server Error: ZYTE_API_KEY is not configured.');
+    }
+
     const zyteUrl = 'https://api.zyte.com/v1/extract';
-    const apiKey = 'YOUR_ZYTE_API_KEY_HERE';
 
     try {
-        // Requesting a Google search page through Zyte's proxy
+        console.log(`DEBUG: Sending request to Zyte for query: "${searchQuery}"`);
+
         const response = await fetch(zyteUrl, {
             method: 'POST',
             headers: {
@@ -27,15 +34,29 @@ app.get('/api/search', async (req, res) => {
             })
         });
 
+        // If Zyte returns an error code (like 401 Unauthorized or 400 Bad Request)
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`DEBUG: Zyte responded with status ${response.status}:`, errorText);
+            return res.status(500).send(`Zyte API Error (${response.status}): ${errorText}`);
+        }
+
         const data = await response.json();
         
-        // Decode the HTML returned by Zyte and send it to your frontend
+        if (!data.httpResponseBody) {
+            console.error("DEBUG: Response from Zyte did not contain httpResponseBody:", data);
+            return res.status(500).send('Error: Zyte response missing httpResponseBody.');
+        }
+
+        // Decode the HTML returned by Zyte
         const decodedHtml = Buffer.from(data.httpResponseBody, 'base64').toString('utf-8');
         res.send(decodedHtml);
 
     } catch (error) {
-        res.status(500).send('Error fetching data via Zyte');
+        console.error("DEBUG: Caught an exception during fetch:", error);
+        res.status(500).send('Error fetching data via Zyte: ' + error.message);
     }
 });
 
-app.listen(3000, () => console.log('Server running on http://localhost:3000'));
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
